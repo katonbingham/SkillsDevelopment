@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
-import '../note.dart';
+import '../models/note.dart';
 
 /*
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
 * Loose format adapted from The Net Ninja's "Flutter For Beginners" video series
-* https://www.youtube.com/playlist?list=PL4cUxeGkcC9jLYyp2Aoh6hcWuxFDX6PBJ
-* and from the docs.flutter.dev pages for relevant modules.
+* https://www.youtube.com/playlist?list=PL4cUxeGkcC9jLYyp2Aoh6hcWuxFDX6PBJ,
+* Doctor Code's sqflite info:
+* https://www.youtube.com/watch?v=RGa4HJutK48,
+* and from the docs.flutter.dev pages for relevant modules
 */
 
 class Edit extends StatefulWidget {
   @override
   _EditState createState() => _EditState();
 }
+// this route needs to be passed data
+// -> a card to edit
 
 class _EditState extends State<Edit> {
 
@@ -21,7 +25,7 @@ class _EditState extends State<Edit> {
   // var note = Note(this.title, this.text);
 
   // temp implementation
-  var note = Note(title: 'this.title', text: 'this.text');
+  var note = Note(1, 'title', 'text', DateTime.now());
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +46,7 @@ class _EditState extends State<Edit> {
           ),
           const SizedBox(height: 6.0),
           Text(
-            note.text,
+            note.body,
             style: TextStyle(
               fontSize: 12.0,
               color: Colors.grey[600],
