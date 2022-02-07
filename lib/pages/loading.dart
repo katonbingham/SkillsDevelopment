@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill_dev/database/database_provider.dart';
 import '../models/note.dart';
 
 /*
@@ -13,11 +14,10 @@ import '../models/note.dart';
 */
 
 class Loading extends StatefulWidget {
+  const Loading({Key? key}) : super(key: key);
+
   @override
   _LoadingState createState() => _LoadingState();
-}
-
-class _LoadingState extends State<Loading> {
 
   // placeholder data
   // List<Note> notes = [
@@ -49,11 +49,9 @@ class _LoadingState extends State<Loading> {
   //
   // }
 
-  @override
-  void initState() {
-    super.initState();
-    // setupNoteList();
-  }
+}
+
+class _LoadingState extends State<Loading> {
 
   @override
   Widget build(BuildContext context) {

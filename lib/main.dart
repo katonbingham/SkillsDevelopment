@@ -26,13 +26,10 @@ import 'services/note_card.dart';
 */
 
 void main() => runApp(MaterialApp(
-  // home: NoteList(), // change later
-    // initialRoute: '/home',
-
-    initialRoute: '/home',
+   initialRoute: '/home',
     routes: {
-      '/': (context) => Loading(),
-      '/home': (context) => Home(),
+      '/': (context) => const Loading(),
+      '/home': (context) => const Home(),
       '/location': (context) => ChooseLocation(),
       '/edit': (context) => Edit(),
       '/add_note': (context) => AddNote(),

@@ -21,11 +21,8 @@ class Edit extends StatefulWidget {
 
 class _EditState extends State<Edit> {
 
-  // intended implementation
-  // var note = Note(this.title, this.text);
-
   // temp implementation
-  var note = Note(1, 'title', 'text', DateTime.now());
+  var note = Note(id: 1, title: 'title', body: 'text', origin: DateTime.now().toString());
 
   @override
   Widget build(BuildContext context) {

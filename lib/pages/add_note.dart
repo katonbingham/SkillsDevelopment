@@ -17,29 +17,30 @@ class AddNote extends StatefulWidget {
   @override
   _AddNoteState createState() => _AddNoteState();
 }
-// this route needs to be passed data
-// -> a card to edit
 
 class _AddNoteState extends State<AddNote>{
+
+  // database helper methods
+  DatabaseProvider provider = DatabaseProvider();
 
   // input controllers
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyController = TextEditingController();
 
-  addNote(Note note) {
-    // temp data
-    note = Note(1, 'Test Title', 'body text dummy data', DateTime.now());
-    DatabaseProvider.db.addNewNote(note);
-    print("TEST - note successfully added");
-  }
+  // Future<int> addNote() async {
+  //   DatabaseProvider provider;
+  //   // temp data
+  //   List<Note> listOfNotes = [Note(title: 'Note Title', body: 'this is some sample text', origin: DateTime.now())];
+  //   print("TEST - add_note.dart addNote(note)");
+  //   return await provider.addNewNote(listOfNotes);
+  // }
 
   @override
   Widget build(BuildContext context) {
     // more temp data
-    int id = 666;
     late String title;
     late String body;
-    late DateTime origin;
+    late String origin;
 
     return Scaffold(
       backgroundColor: Colors.grey[200],
@@ -75,13 +76,15 @@ class _AddNoteState extends State<AddNote>{
       floatingActionButton: FloatingActionButton.extended(
         onPressed: (){
           setState(() {
-
             title = titleController.text;
             body = bodyController.text;
-            origin = DateTime.now();
+            origin = DateTime.now().toString();
           });
-          Note note = Note(id, title, body, origin);
-          addNote(note);
+          // Note note = Note(title: title, body: body, origin: origin);
+          Note note = Note(title: title, body: body, origin: DateTime.now().toString());
+
+          List<Note> listOfNotes = [note];
+          provider.addNewNote(listOfNotes);
 
           // return to home page after note is added
           Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);

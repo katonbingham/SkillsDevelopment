@@ -11,15 +11,28 @@
 
 class Note {
 
-  int id;
-  String title;
-  String body;
-  DateTime origin;
+  // ? operator guards access to potentially null data
+  final int? id;
+  final String title;
+  final String body;
+  final String origin;
 
-  Note(this.id, this.title, this.body, this.origin);
+  Note({
+    this.id,
+    required this.title,
+    required this.body,
+    required this.origin
+      });
+
+  // named constructor to handle data
+  Note.fromMap(Map<String, dynamic> res)
+      : id = res['id'],
+        title = res['title'],
+        body = res['body'],
+        origin = res['origin'];
 
   // map a dynamic object to Note variables
-  Map<String, dynamic> toMap(){
+  Map<String, Object?> toMap(){
     return({
       "id":id,
       "title":title,
@@ -28,6 +41,3 @@ class Note {
     });
   }
 }
-
-
-// Note({required this.body, required this.title});

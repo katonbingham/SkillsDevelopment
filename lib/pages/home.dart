@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:skill_dev/database/database_provider.dart';
 import 'package:skill_dev/models/unused_note_list.dart';
 
 import 'edit.dart';
+import 'package:skill_dev/database/database_provider.dart';
 import '../models/note.dart';
 import '../services/note_card.dart';
 import '../models/unused_note_list.dart';
@@ -19,23 +21,28 @@ import '../models/unused_note_list.dart';
 */
 
 class Home extends StatefulWidget {
+  const Home({Key? key}) : super(key: key);
+
   @override
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  late DatabaseProvider provider;
 
-  // retrieve all notes from the database
-  getNotes() async{
-    final notes = await DatabaseProvider.db.getNotes();
-    return notes;
+  @override
+  void initState() {
+    super.initState();
+    provider = DatabaseProvider();
+    provider.initializeDatabase().whenComplete(() async {
+      await provider.getAllNotes();
+      setState(() {});
+    });
   }
 
 
   @override
   Widget build(BuildContext context) {
-    // previous stateful implementation
-    // data = ModalRoute.of(context)!.settings.arguments as Map;
     return Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
@@ -43,88 +50,132 @@ class _HomeState extends State<Home> {
           centerTitle: true,
           backgroundColor: Colors.greenAccent,
         ),
-      body: FutureBuilder(
-        future: getNotes(),
-        builder: (context, noteData) {
-          switch (noteData.connectionState) {
-            // if connection in progress, display loading indicator
-            case ConnectionState.waiting:
-              {
-                return const Center(child: CircularProgressIndicator());
-              }
-            // if connection is finished, evaluate results
-            case ConnectionState.done:
-              {
-                // if null, there are no notes - prompt user to make some
-                if (noteData.data == Null) {
-                  return const Center(
-                    child: Text("No notes to display, log your first training session"),
-                  );
-                } else {  // if not null, display the formatted notes
-                  // return const Center(child: Text('the list'));
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
 
-                    child: ListView.builder(
-                      // null safety in Dart causing me issues with .length
-                      // I believe this method does not exist anymore?
-                      // itemCount: noteData.data.length,
+        body: FutureBuilder(
+          future: provider.getAllNotes(), // double-check this does the right thing
+          builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot){
+            if (snapshot.hasData){
+              return ListView.builder(
+                  itemCount: snapshot.data?.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Dismissible(
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        color: Colors.red,
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: const Icon(Icons.delete_forever_outlined),
+                      ),
+                      key: ValueKey<int>(snapshot.data![index].id!),
+                    onDismissed: (DismissDirection direction) async {
+                        await provider.deleteNote(snapshot.data![index].id!);
+                        setState(() {
+                          snapshot.data!.remove(snapshot.data![index]);
+                        });
+                    },
+                      child: Card(
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(8.0),
+                          title: Text(snapshot.data![index].title),
+                          subtitle: Text(snapshot.data![index].body),
+                        ),
+                      ),
+                    );
+                  },
+              );
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
 
-                      itemBuilder: (context, index){
-
-                        // set different items
-                        // if (noteData != null) {String title = (noteData.data as dynamic)[index]['title'];}
-
-                        String title = "title";
-                        String body = "this is the body text";
-                        String id = "1";
-                        String origin = DateTime.now().toString();
-
-
-                        /* !! this implementation does not work currently, I need
-                        * to solve how to async/late assign the dynamic object
-                        * noteData actual data - Flutter 2.0.2 changed how nullable
-                        * conditions are handled.
-                        */
-
-                        // String body = (noteData.data.[index]['body'];
-                        // String id = (noteData.data as dynamic)[index]['id'];
-                        // String origin = (noteData.data as dynamic)[index]['origin'];
-
-
-                        // 'as dynamic' is an attempted fix for null-safe Dart requirements
-                        //  didn't work, allowed null call
-                        // String title = (noteData.data as dynamic)[index]['title'];
-                        // String body = (noteData.data as dynamic)[index]['body'];
-                        // String id = (noteData.data as dynamic)[index]['id'];
-                        // String origin = (noteData.data as dynamic)[index]['origin'];
-
-
-                        return Card(
-                          child: ListTile(
-                            title: Text(title),
-                            subtitle: Text(body),
-                          ),
-                        );
-                      },
-                    ),
-                  );
+        //--------------------------------------------
+        /*
+        // FutureBuilder creates an asynchronous widget that will display when
+        // the async calls are returned to it
+        body: FutureBuilder(
+          future: this.provider.getAllNotes(),
+          builder: (context, noteData) {
+            switch (noteData.connectionState) {
+              case ConnectionState.none:
+                {
+                  return const Text('How did you get here?');
                 }
-              }
-          }
+            // if connection in progress, display loading indicator
+              case ConnectionState.waiting:
+                {
+                  return const Center(child: CircularProgressIndicator());
+                }
+            // if connection is finished, evaluate results
+              case ConnectionState.done:
+                {
+                  // if (noteData.hasError){
+                  //   return Text('Error: ${noteData.error}');
+                  // }
+
+                  if (noteData.data == null) {
+                    // if null, there are no notes - prompt user to make some
+                    return const Center(
+                      child: Text(
+                          "No notes to display, log your first training session"),
+                    );
+                  } else { // if not null, display the formatted notes
+                    return const Center(child: Text('the list'));
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+
+                      child: ListView.builder(
+
+                        itemBuilder: (context, index) {
+                          // set different items
+                          String title = "title";
+                          String body = "this is the body text";
+                          String id = "1";
+                          String origin = DateTime.now().toString();
+
+
+                          // String title = "${noteData.data[index]['title']}";
+                          // String body = noteData.data.[index]['body'];
+                          // String id = noteData.data.[index]['id'];
+                          // String origin = noteData.data.[index]['origin'];
+
+                          // String title = noteData.data.
+
+                          // 'as dynamic' is an attempted fix for null-safe Dart requirements
+                          //  didn't work, allowed null call
+                          // String title = (noteData.data as dynamic)[index]['title'];
+                          // String body = (noteData.data as dynamic)[index]['body'];
+                          // String id = (noteData.data as dynamic)[index]['id'];
+                          // String origin = (noteData.data as dynamic)[index]['origin'];
+
+                          return Card(
+                            child: ListTile(
+                              title: Text(title),
+                              subtitle: Text(body),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                }
+            }
             // addresses FutureBuilder null safety requirement
             throw '';
           },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-          Navigator.pushNamed(context, "/add_note");
-        },
-        child: Icon(Icons.note_add_outlined),
-      )
+        ),
+         */
+
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushNamed(context, "/add_note");
+          },
+          child: const Icon(Icons.note_add_outlined),
+        )
     );
   }
 }
+
 
 
 
