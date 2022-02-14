@@ -27,17 +27,10 @@ class _AddNoteState extends State<AddNote>{
   TextEditingController titleController = TextEditingController();
   TextEditingController bodyController = TextEditingController();
 
-  // Future<int> addNote() async {
-  //   DatabaseProvider provider;
-  //   // temp data
-  //   List<Note> listOfNotes = [Note(title: 'Note Title', body: 'this is some sample text', origin: DateTime.now())];
-  //   print("TEST - add_note.dart addNote(note)");
-  //   return await provider.addNewNote(listOfNotes);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // more temp data
+
+    // temp data
     late String title;
     late String body;
     late String origin;
@@ -81,7 +74,7 @@ class _AddNoteState extends State<AddNote>{
             origin = DateTime.now().toString();
           });
           // Note note = Note(title: title, body: body, origin: origin);
-          Note note = Note(title: title, body: body, origin: DateTime.now().toString());
+          Note note = Note(title: title, body: body, origin: origin);
 
           List<Note> listOfNotes = [note];
           provider.addNewNote(listOfNotes);

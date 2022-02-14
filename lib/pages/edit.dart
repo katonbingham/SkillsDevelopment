@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skill_dev/database/database_provider.dart';
 import '../models/note.dart';
 
 /*
@@ -13,16 +14,27 @@ import '../models/note.dart';
 */
 
 class Edit extends StatefulWidget {
+
+  final Note? note;
+  const Edit({Key? key, required this.note}) : super(key: key);
+
   @override
   _EditState createState() => _EditState();
 }
-// this route needs to be passed data
-// -> a card to edit
 
 class _EditState extends State<Edit> {
+  // database helper methods
+  DatabaseProvider provider = DatabaseProvider();
 
-  // temp implementation
-  var note = Note(id: 1, title: 'title', body: 'text', origin: DateTime.now().toString());
+  // input controllers
+  late TextEditingController titleController;
+  late TextEditingController bodyController;
+
+  // variables to edit
+  late int? id;
+  late String title;
+  late String body;
+  late String origin;
 
   @override
   Widget build(BuildContext context) {
@@ -30,27 +42,65 @@ class _EditState extends State<Edit> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.blue[900],
-        title: Text('Editing...'),
+        // title: Text(widget.title),
+        title: const Text('Edit Note'),
       ),
       body: Column(
         children: <Widget>[
-          Text(
-          note.title,
-          style: TextStyle(
-            fontSize: 18.0,
-            color: Colors.grey[800],
+          const SizedBox(height: 8.0),
+          TextFormField(
+            controller: titleController = TextEditingController(text: widget.note?.title),
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              labelStyle: TextStyle(
+                color: Colors.black.withOpacity(0.3)
+              ),
+              labelText: 'Note Title',
             ),
           ),
-          const SizedBox(height: 6.0),
-          Text(
-            note.body,
-            style: TextStyle(
-              fontSize: 12.0,
-              color: Colors.grey[600],
+          const SizedBox(height: 8.0),
+          TextField(
+            controller: bodyController = TextEditingController(text: widget.note?.body),
+            maxLines: 12,
+            keyboardType: TextInputType.multiline,
+            decoration: InputDecoration(
+              border: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(10),
+                ),
+              ),
+              labelStyle: TextStyle(
+                color: Colors.black.withOpacity(0.3)
+              ),
+              labelText: 'Note Body',
+              ),
             ),
-          ),
         ]
       ),
+      floatingActionButton: FloatingActionButton(
+        // When the user presses the button, push updated fields to db
+        onPressed: (){
+          setState(() {
+            id = widget.note?.id;
+            title = titleController.text;
+            body = bodyController.text;
+            origin = DateTime.now().toString();
+          });
+
+          Note note = Note(id: id, title: title, body: body, origin: origin);
+          provider.editNote(note);
+
+          // return to home page after note is added
+          Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
+          // perhaps this is the optimal approach?
+          // Navigator.pop(context, true);
+        },
+          child: const Icon(Icons.check)
+      )
     );
   }
 }

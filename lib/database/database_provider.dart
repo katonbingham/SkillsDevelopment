@@ -16,6 +16,12 @@ import '../models/note.dart';
 
 class DatabaseProvider {
 
+  // what's this
+  // final DatabaseFactory dbFactory;
+
+  // currently not used by anything nor initialized - was for deleteAllNotes().
+  // Database? db;
+
   // https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
   Future<Database> initializeDatabase() async {
     String path = await getDatabasesPath();
@@ -54,6 +60,27 @@ class DatabaseProvider {
     );
   }
 
+  Future<int> editNote(Note note) async {
+    int result = 0;
+
+    // this boy null
+    int? id = note.id;
+    print('note id in editnote method: $id');
+
+    final db = await initializeDatabase();
+
+    result = await db.update(
+        'notes',
+        note.toMap(),
+        where: "id = ?",
+        whereArgs: [note.id],
+    );
+
+    print('edit result: $result');
+
+    return result;
+  }
+
   // https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
   Future<List<Note>> getAllNotes() async {
     final Database db = await initializeDatabase();
@@ -61,6 +88,13 @@ class DatabaseProvider {
     return queryResult.map((e) => Note.fromMap(e)).toList();
   }
 
+  Future clearAllNotes() async {
+    // not hooked up yet, the db called isn't initialized.
+    // await db!.close();
+
+    final db = await initializeDatabase();
+    await db.close();
+  }
   // previous implementation
   // ------------------------------------------------------------------------
   // underscore makes constructor private to the library and non-instantiable

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:skill_dev/database/database_provider.dart';
-import 'package:skill_dev/models/unused_note_list.dart';
 
-import 'edit.dart';
-import 'package:skill_dev/database/database_provider.dart';
 import '../models/note.dart';
-import '../services/note_card.dart';
-import '../models/unused_note_list.dart';
+import 'edit.dart';
+
+// import '../services/note_card.dart';
+// import '../models/unused_note_list.dart';
+// import 'package:skill_dev/models/unused_note_list.dart';
+// import 'package:skill_dev/database/database_provider.dart';
+// import 'dart:convert';
 
 /*
 * Author: Katon Bingham
@@ -40,7 +41,8 @@ class _HomeState extends State<Home> {
     });
   }
 
-
+  /* TODO: I would like to make the note cards collapse after the body text
+      exceeds a certain length, rather than always displaying the full body. */
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,16 +51,27 @@ class _HomeState extends State<Home> {
           title: const Text('Skill Development Notes'),
           centerTitle: true,
           backgroundColor: Colors.greenAccent,
+          automaticallyImplyLeading: false, // removes the back arrow
         ),
 
         body: FutureBuilder(
-          future: provider.getAllNotes(), // double-check this does the right thing
-          builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot){
-            if (snapshot.hasData){
+          future: provider.getAllNotes(),
+          builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+            if (snapshot.hasData) {
               return ListView.builder(
-                  itemCount: snapshot.data?.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Dismissible(
+                itemCount: snapshot.data?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  var note = snapshot.data![index];
+                  return GestureDetector(
+                    onTap: () {
+                      // goToEditPage(note);
+                      // print('gesture ontap');
+
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) {
+                            return Edit(note: note);
+                          }));},
+                    child: Dismissible(
                       direction: DismissDirection.endToStart,
                       background: Container(
                         color: Colors.red,
@@ -67,12 +80,12 @@ class _HomeState extends State<Home> {
                         child: const Icon(Icons.delete_forever_outlined),
                       ),
                       key: ValueKey<int>(snapshot.data![index].id!),
-                    onDismissed: (DismissDirection direction) async {
+                      onDismissed: (DismissDirection direction) async {
                         await provider.deleteNote(snapshot.data![index].id!);
                         setState(() {
                           snapshot.data!.remove(snapshot.data![index]);
                         });
-                    },
+                      },
                       child: Card(
                         child: ListTile(
                           contentPadding: const EdgeInsets.all(8.0),
@@ -80,92 +93,15 @@ class _HomeState extends State<Home> {
                           subtitle: Text(snapshot.data![index].body),
                         ),
                       ),
-                    );
-                  },
+                    ),
+                  );
+                },
               );
             } else {
               return const Center(child: CircularProgressIndicator());
             }
           },
         ),
-
-        //--------------------------------------------
-        /*
-        // FutureBuilder creates an asynchronous widget that will display when
-        // the async calls are returned to it
-        body: FutureBuilder(
-          future: this.provider.getAllNotes(),
-          builder: (context, noteData) {
-            switch (noteData.connectionState) {
-              case ConnectionState.none:
-                {
-                  return const Text('How did you get here?');
-                }
-            // if connection in progress, display loading indicator
-              case ConnectionState.waiting:
-                {
-                  return const Center(child: CircularProgressIndicator());
-                }
-            // if connection is finished, evaluate results
-              case ConnectionState.done:
-                {
-                  // if (noteData.hasError){
-                  //   return Text('Error: ${noteData.error}');
-                  // }
-
-                  if (noteData.data == null) {
-                    // if null, there are no notes - prompt user to make some
-                    return const Center(
-                      child: Text(
-                          "No notes to display, log your first training session"),
-                    );
-                  } else { // if not null, display the formatted notes
-                    return const Center(child: Text('the list'));
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-
-                      child: ListView.builder(
-
-                        itemBuilder: (context, index) {
-                          // set different items
-                          String title = "title";
-                          String body = "this is the body text";
-                          String id = "1";
-                          String origin = DateTime.now().toString();
-
-
-                          // String title = "${noteData.data[index]['title']}";
-                          // String body = noteData.data.[index]['body'];
-                          // String id = noteData.data.[index]['id'];
-                          // String origin = noteData.data.[index]['origin'];
-
-                          // String title = noteData.data.
-
-                          // 'as dynamic' is an attempted fix for null-safe Dart requirements
-                          //  didn't work, allowed null call
-                          // String title = (noteData.data as dynamic)[index]['title'];
-                          // String body = (noteData.data as dynamic)[index]['body'];
-                          // String id = (noteData.data as dynamic)[index]['id'];
-                          // String origin = (noteData.data as dynamic)[index]['origin'];
-
-                          return Card(
-                            child: ListTile(
-                              title: Text(title),
-                              subtitle: Text(body),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  }
-                }
-            }
-            // addresses FutureBuilder null safety requirement
-            throw '';
-          },
-        ),
-         */
-
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             Navigator.pushNamed(context, "/add_note");
@@ -174,11 +110,45 @@ class _HomeState extends State<Home> {
         )
     );
   }
+
+  void goToEditPage(Note? note) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) {
+          return Edit(note: note);
+        }));
+        // .then((valueFromTextField) {
+      // use your valueFromTextField from the second page
+    // });
+  }
 }
 
 
-
-
+// pretty sure this is just a stateless implementation
+// https://docs.flutter.dev/cookbook/navigation/navigate-with-arguments
+// A Widget that extracts the necessary arguments from
+// the ModalRoute.
+// class ExtractArgumentsScreen extends StatelessWidget {
+//   const ExtractArgumentsScreen({Key? key}) : super(key: key);
+//
+//   static const routeName = '/edit';
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     // Extract the arguments from the current ModalRoute
+//     // settings and cast them as ScreenArguments.
+//     final args = ModalRoute.of(context)!.settings.arguments as Note;
+//
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(args.title),
+//       ),
+//       body: Center(
+//         child:
+//         Text(args.body),
+//       ),
+//     );
+//   }
+// }
 
 // body: SafeArea(
 // child: GridView.count(

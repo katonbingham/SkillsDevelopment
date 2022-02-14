@@ -25,13 +25,14 @@ import 'services/note_card.dart';
 * and from the docs.flutter.dev pages for relevant modules
 */
 
+
 void main() => runApp(MaterialApp(
    initialRoute: '/home',
     routes: {
       '/': (context) => const Loading(),
       '/home': (context) => const Home(),
       '/location': (context) => ChooseLocation(),
-      '/edit': (context) => Edit(),
+      '/edit': (context) => const Edit(note: null),
       '/add_note': (context) => AddNote(),
     },
   )
