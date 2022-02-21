@@ -1,20 +1,13 @@
-import 'dart:async';
-
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter/material.dart';
 import 'package:skill_dev/pages/home.dart';
 import 'package:skill_dev/pages/loading.dart';
-import 'package:skill_dev/pages/choose_location.dart';
-import 'package:skill_dev/models/unused_note_list.dart';
 
-import 'models/note.dart';
-import 'models/unused_note_list.dart';
 import 'pages/edit.dart';
 import 'pages/add_note.dart';
-import 'services/note_card.dart';
 
 /*
+* Main holds the named routes for the application
+*
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
@@ -25,19 +18,14 @@ import 'services/note_card.dart';
 * and from the docs.flutter.dev pages for relevant modules
 */
 
-
+// list of named routes
 void main() => runApp(MaterialApp(
    initialRoute: '/home',
     routes: {
       '/': (context) => const Loading(),
       '/home': (context) => const Home(),
-      '/location': (context) => ChooseLocation(),
       '/edit': (context) => const Edit(note: null),
-      '/add_note': (context) => AddNote(),
+      '/add_note': (context) => const AddNote(),
     },
   )
 );
-
-
-
-

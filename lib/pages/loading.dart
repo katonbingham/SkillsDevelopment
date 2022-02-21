@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:skill_dev/database/database_provider.dart';
-import '../models/note.dart';
 
 /*
+* This Loading page would ideally be used to pre-initialize information like the
+* database and other helper objects. Currently it catches the user should they
+* perform an unexpected action and provides a link back to the Home page.
+*
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
@@ -18,37 +20,6 @@ class Loading extends StatefulWidget {
 
   @override
   _LoadingState createState() => _LoadingState();
-
-  // placeholder data
-  // List<Note> notes = [
-  //   Note(title: 'Day1', text: 'bar hop'),
-  //   Note(title: "Tomorrow's work", text: 'matt xray alpha'),
-  //   Note(title: 'Paul Bunyan', text: 'this is stage four')
-  // ];
-  //
-  //
-  // List<Note> notes = [
-  //   Note(2, 'Day1', 'bar hop', DateTime.now()),
-  //   Note(3, "Tomorrow's work", 'matt xray alpha', DateTime.now()),
-  //   Note(4, 'Paul Bunyan', 'this is stage four', DateTime.now())
-  // ];
-
-  // // async call to db for list of notes, assign to local variables
-  // void setupNoteList() async {
-  //   // more temp data for instance
-  //   Note instance = Note(3, "Tomorrow's work", 'matt xray alpha', DateTime.now());
-  //
-  //   print("printing instance: ");
-  //   print(instance.title + instance.body);
-  //
-  //   // should I await.instance.someMethod() here?
-  //   Navigator.pushReplacementNamed(context, '/home', arguments: {
-  //     'title': instance.title,
-  //     'text': instance.text,
-  //   });
-  //
-  // }
-
 }
 
 class _LoadingState extends State<Loading> {

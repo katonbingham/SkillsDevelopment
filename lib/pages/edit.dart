@@ -3,6 +3,11 @@ import 'package:skill_dev/database/database_provider.dart';
 import '../models/note.dart';
 
 /*
+* This page is pushed a Note object from the Home page and the user is prompted
+* to make the desired changes to each text field. When the submit action button
+* is pressed, the user input is bound to a new Note object with the same ID as
+* earlier and that replaces the entry in the database.
+*
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
@@ -42,7 +47,6 @@ class _EditState extends State<Edit> {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.blue[900],
-        // title: Text(widget.title),
         title: const Text('Edit Note'),
       ),
       body: Column(
@@ -85,20 +89,21 @@ class _EditState extends State<Edit> {
         // When the user presses the button, push updated fields to db
         onPressed: (){
           setState(() {
+            // bind user input to temp variables
             id = widget.note?.id;
             title = titleController.text;
             body = bodyController.text;
             origin = DateTime.now().toString();
           });
 
+          // bind user input in temp variables to a Note object
           Note note = Note(id: id, title: title, body: body, origin: origin);
+          // commit to database, conflicts resolve in favor of pushed object
           provider.editNote(note);
 
           // return to home page after note is added
           Navigator.pushNamedAndRemoveUntil(context, "/home", (route) => false);
-          // perhaps this is the optimal approach?
-          // Navigator.pop(context, true);
-        },
+          },
           child: const Icon(Icons.check)
       )
     );

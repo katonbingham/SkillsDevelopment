@@ -1,4 +1,5 @@
 /*
+* Primary Entity used in this project
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
@@ -11,7 +12,7 @@
 
 class Note {
 
-  // ? operator guards access to potentially null data
+  // '?' operator guards access to potentially null data
   final int? id;
   final String title;
   final String body;

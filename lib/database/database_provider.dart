@@ -1,28 +1,21 @@
-/*
-* sqflite database provider class
-*
-* Author: Katon Bingham
-*
-* Code Use Disclaimer:
-* Loose format adapted from The Net Ninja's "Flutter For Beginners" video series
-* https://www.youtube.com/playlist?list=PL4cUxeGkcC9jLYyp2Aoh6hcWuxFDX6PBJ,
-* Doctor Code's sqflite info:
-* https://www.youtube.com/watch?v=RGa4HJutK48,
-* and from the docs.flutter.dev pages for relevant modules
-*/
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/note.dart';
 
+/*
+* SQFLite database provider class
+* Author: Katon Bingham
+*
+* Code Use Disclaimer:
+* Flutter SQFLite integration based on:
+* https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
+* and from the docs.flutter.dev pages for relevant modules
+*/
+
+
 class DatabaseProvider {
 
-  // what's this
-  // final DatabaseFactory dbFactory;
-
-  // currently not used by anything nor initialized - was for deleteAllNotes().
-  // Database? db;
-
-  // https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
+  // initializes the database locally when called
   Future<Database> initializeDatabase() async {
     String path = await getDatabasesPath();
     return openDatabase(
@@ -35,12 +28,11 @@ class DatabaseProvider {
         "body TEXT, "
         "origin DATETIME)"
         );
-        // It is possible passing a string to the datetime sqlite column will err
-        // so far so good, however.
       },  version: 1);
   }
 
-  // https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
+  // add a new note to the database
+  // returns # of successful insert operations
   Future<int> addNewNote(List<Note> notes) async {
     int result = 0;
     final Database db = await initializeDatabase();
@@ -50,7 +42,7 @@ class DatabaseProvider {
     return result;
   }
 
-  // https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
+  // deletes a note entry based on given ID
   Future<void> deleteNote(int id) async {
     final db = await initializeDatabase();
     await db.delete(
@@ -60,12 +52,12 @@ class DatabaseProvider {
     );
   }
 
+  // overwrites a note entry with the note object passed to it
+  // conflicts are resolved in the editNote object's favor
   Future<int> editNote(Note note) async {
     int result = 0;
 
-    // this boy null
     int? id = note.id;
-    print('note id in editnote method: $id');
 
     final db = await initializeDatabase();
 
@@ -76,74 +68,20 @@ class DatabaseProvider {
         whereArgs: [note.id],
     );
 
-    print('edit result: $result');
-
     return result;
   }
 
-  // https://petercoding.com/flutter/2021/03/21/using-sqlite-in-flutter/
+  // returns all notes in database
   Future<List<Note>> getAllNotes() async {
     final Database db = await initializeDatabase();
     final List<Map<String, Object?>> queryResult = await db.query('notes');
     return queryResult.map((e) => Note.fromMap(e)).toList();
   }
 
+  // closes database
   Future clearAllNotes() async {
-    // not hooked up yet, the db called isn't initialized.
-    // await db!.close();
-
     final db = await initializeDatabase();
     await db.close();
   }
-  // previous implementation
-  // ------------------------------------------------------------------------
-  // underscore makes constructor private to the library and non-instantiable
-  // DatabaseProvider._();
-  // static final DatabaseProvider db = DatabaseProvider._();
-  // static late Database _database;
 
-  // create getter for the database
-  // Future<Database> get database async {
-  //   // do we have a db?
-  //   if (_database != null) {
-  //     return _database;
-  //   }
-  //
-  //   _database = await initializeDatabase();
-  //   return _database;
-  // }
-
-  // initDB() async{
-  //   return await openDatabase(join(await getDatabasesPath(), "skill_dev.db"),
-  //     onCreate: (db, version) async {
-  //     // create first table
-  //     await db.execute('''
-  //     CREATE TABLE notes (
-  //       id INTEGER PRIMARY KEY AUTOINCREMENT,
-  //       title TEXT
-  //       body TEXT
-  //       origin DATE
-  //     )
-  //     ''');
-  //     }, version: 1);
-  // }
-
-  // addNewNote(Note note) async {
-  //   final db = await database;
-  //   // ConflictAlgorithm.replace will replace any existing table data with the insert() data
-  //   db.insert("notes", note.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
-  // }
-
-  // return all elements in "notes" table
-  // Future<dynamic> getNotes() async {
-  //   final db = await database;
-  //   var result = await db.query("notes");
-  //   if (result.isEmpty) {
-  //     return null;
-  //   } else {
-  //     var resultMap = result.toList();
-  //     // condition ? ifTrue : ifFalse
-  //     return resultMap.isNotEmpty ? resultMap : Null;
-  //   }
-  // }
 }

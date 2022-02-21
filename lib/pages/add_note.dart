@@ -3,6 +3,9 @@ import 'package:skill_dev/database/database_provider.dart';
 import '../models/note.dart';
 
 /*
+* This page handles the logic to take user input for a new note, assign it to
+* a Note object, and use the database handler to statefully store it.
+*
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
@@ -14,6 +17,8 @@ import '../models/note.dart';
 */
 
 class AddNote extends StatefulWidget {
+  const AddNote({Key? key}) : super(key: key);
+
   @override
   _AddNoteState createState() => _AddNoteState();
 }
@@ -46,6 +51,7 @@ class _AddNoteState extends State<AddNote>{
         child: Column(
           children: [
             TextField(
+              key: const Key('titleField'),
               controller: titleController,
               decoration: const InputDecoration(
                 border: InputBorder.none,
@@ -54,6 +60,7 @@ class _AddNoteState extends State<AddNote>{
             ),
             Expanded(
                 child: TextField(
+                  key: const Key('bodyField'),
                   controller: bodyController,
                   keyboardType: TextInputType.multiline,
                   maxLines: null,
@@ -67,16 +74,20 @@ class _AddNoteState extends State<AddNote>{
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: (){
+          key: const Key('submitNoteButton'),
+          onPressed: (){
           setState(() {
+            // bind user input to the late initialized temp data defined above
             title = titleController.text;
             body = bodyController.text;
             origin = DateTime.now().toString();
           });
-          // Note note = Note(title: title, body: body, origin: origin);
-          Note note = Note(title: title, body: body, origin: origin);
 
+          // bind temp data to a Note object
+          Note note = Note(title: title, body: body, origin: origin);
+          // add Note object to a List of Notes object
           List<Note> listOfNotes = [note];
+          // commit the note to the database
           provider.addNewNote(listOfNotes);
 
           // return to home page after note is added

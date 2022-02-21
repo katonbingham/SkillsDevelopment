@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:skill_dev/database/database_provider.dart';
+import 'package:skill_dev/pages/add_note.dart';
 
 import '../models/note.dart';
 import 'edit.dart';
 
-// import '../services/note_card.dart';
-// import '../models/unused_note_list.dart';
-// import 'package:skill_dev/models/unused_note_list.dart';
-// import 'package:skill_dev/database/database_provider.dart';
-// import 'dart:convert';
-
 /*
+* This is the primary interface for the application. Populating the app with the
+* list of notes is the primary function, and then directing the user to the
+* correct page based on the gestures they use are secondary. Future iterations
+* of this will include more modularization of the logic on this page, as well as
+* a greater focus on the UI and aesthetic presentation of the data.
+*
 * Author: Katon Bingham
 *
 * Code Use Disclaimer:
@@ -48,6 +49,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
         backgroundColor: Colors.grey[200],
         appBar: AppBar(
+          key: const Key('appBar'),
           title: const Text('Skill Development Notes'),
           centerTitle: true,
           backgroundColor: Colors.greenAccent,
@@ -55,23 +57,24 @@ class _HomeState extends State<Home> {
         ),
 
         body: FutureBuilder(
+          // populate page with notes from the database
           future: provider.getAllNotes(),
           builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
             if (snapshot.hasData) {
               return ListView.builder(
+                key: const Key('noteListView'),
                 itemCount: snapshot.data?.length,
                 itemBuilder: (BuildContext context, int index) {
                   var note = snapshot.data![index];
                   return GestureDetector(
+                    // tap gesture to edit note
                     onTap: () {
-                      // goToEditPage(note);
-                      // print('gesture ontap');
-
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) {
                             return Edit(note: note);
                           }));},
                     child: Dismissible(
+                      // horizontal swipe gesture to delete note
                       direction: DismissDirection.endToStart,
                       background: Container(
                         color: Colors.red,
@@ -103,76 +106,17 @@ class _HomeState extends State<Home> {
           },
         ),
         floatingActionButton: FloatingActionButton(
+          // Add Note button anchored to bottom right of screen
+          key: const Key('addNoteButton'),
           onPressed: () {
-            Navigator.pushNamed(context, "/add_note");
-          },
+            // "/add_note"
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const AddNote();
+                }));
+            },
           child: const Icon(Icons.note_add_outlined),
         )
     );
   }
-
-  void goToEditPage(Note? note) {
-    Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) {
-          return Edit(note: note);
-        }));
-        // .then((valueFromTextField) {
-      // use your valueFromTextField from the second page
-    // });
-  }
 }
-
-
-// pretty sure this is just a stateless implementation
-// https://docs.flutter.dev/cookbook/navigation/navigate-with-arguments
-// A Widget that extracts the necessary arguments from
-// the ModalRoute.
-// class ExtractArgumentsScreen extends StatelessWidget {
-//   const ExtractArgumentsScreen({Key? key}) : super(key: key);
-//
-//   static const routeName = '/edit';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // Extract the arguments from the current ModalRoute
-//     // settings and cast them as ScreenArguments.
-//     final args = ModalRoute.of(context)!.settings.arguments as Note;
-//
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text(args.title),
-//       ),
-//       body: Center(
-//         child:
-//         Text(args.body),
-//       ),
-//     );
-//   }
-// }
-
-// body: SafeArea(
-// child: GridView.count(
-// crossAxisCount: 2,
-// crossAxisCount: 1,
-
-// previous formatting
-// children: notes.map((note) => NoteCard(
-//   note: note,
-//   edit: (){
-//     TextButton.icon( // doesn't have an effect currently
-//       onPressed: (){Navigator.pushNamed(context, '/edit', arguments: {
-//         'title': instance.title,
-//         'text': instance.text,
-//       });},
-//       icon: Icon(Icons.edit),
-//       label: Text('Edit Note'),
-//     );
-//   },
-//   delete: (){
-//     setState(() {
-//       // notes.remove(note);
-//     });
-//   }
-// )).toList(),
-// ),
-// ),
