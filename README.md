@@ -22,6 +22,7 @@
     <li>
       <a href="#about-the-project">About The Project</a>
       <ul>
+        <li><a href="#code-snippets">Code Snippets</a></li>
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
@@ -38,6 +39,30 @@ This project aims to fill a niche for fitness applications that targets a user d
 <div align="center">
     <img src="FinalDemo1.png" alt="Home Screen Example" style="width: 50%; height: 50%"/>
 </div>
+
+## Code Snippets
+
+Flutter Card
+```
+body: FutureBuilder(
+/*  */
+child: Card(
+  child: ListTile(
+    contentPadding: const EdgeInsets.all(8.0),
+    title: Text(snapshot.data![index].title),
+    subtitle: Text(snapshot.data![index].body),
+  ),
+),
+```
+
+Database query
+```
+"CREATE TABLE notes ("
+        "id INTEGER PRIMARY KEY, "
+        "title TEXT, "
+        "body TEXT, "
+        "origin DATETIME)"
+```
 
 ### Built With
 
