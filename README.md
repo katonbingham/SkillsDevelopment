@@ -37,7 +37,9 @@
 This project aims to fill a niche for fitness applications that targets a user doing non-traditional training. The market is flush with apps that cater to the barbell lifting, known rep scheme, distance running, defined several week training cycle users. For individuals who want to train a technical sport that doesn’t necessarily benefit from a strength-building progressive overload approach, this application gives the flexibility to schedule training like workouts, but the actual training is unstructured enough to give freedom to the user.
 
 <div align="center">
-    <img src="FinalDemo1.png" alt="Home Screen Example" style="width: 50%; height: 50%"/>
+  <img src="FinalDemo1.png" alt="Home Screen Example" style="width: 50%; height: 50%"/>
+  <img src="UI.png" alt="User Interface" style="width: 30%; height: 30%"/>
+  <img src="UML.png" alt="UML" style="width: 30%; height: 30%"/>
 </div>
 
 ## Code Snippets
