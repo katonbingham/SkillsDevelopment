@@ -38,8 +38,8 @@ This project aims to fill a niche for fitness applications that targets a user d
 
 <div align="center">
   <img src="FinalDemo1.png" alt="Home Screen Example" style="width: 50%; height: 50%"/>
-  <img src="UI.png" alt="User Interface" style="width: 30%; height: 30%"/>
-  <img src="UML.png" alt="UML" style="width: 30%; height: 30%"/>
+  <img src="UI.png" alt="User Interface" style="width: 80%; height: 80%"/>
+  <img src="UML.png" alt="UML" style="width: 80%; height: 80%"/>
 </div>
 
 ## Code Snippets
